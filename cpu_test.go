@@ -121,7 +121,6 @@ func TestTestAndSetNegative(t *testing.T) {
     if cpu.getNegative() {
         t.Error("Expected getNegative to return false")
     }
-
 }
 
 func TestTestAndSetZero(t *testing.T) {
@@ -151,17 +150,17 @@ func TestTestAndSetCarryAddition(t *testing.T) {
     }
 }
 
-var overflowAdditionTests = []struct {
-    a, b, c  uint8
-    expected bool
-}{
-    {0x80, 0x7f, 0x00, false},
-    {0x80, 0x80, 0x00, true},
-    {0x80, 0x80, 0x80, false},
-    {0x00, 0x00, 0x80, true},
-}
-
 func TestTestAndSetOverflowAddition(t *testing.T) {
+    var overflowAdditionTests = []struct {
+        a, b, c  uint8
+        expected bool
+    }{
+        {0x80, 0x7f, 0x00, false},
+        {0x80, 0x80, 0x00, true},
+        {0x80, 0x80, 0x80, false},
+        {0x00, 0x00, 0x80, true},
+    }
+
     cpu := new(Cpu)
     for _, val := range overflowAdditionTests {
         cpu.testAndSetOverflowAddition(val.a, val.b, val.c)

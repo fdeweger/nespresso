@@ -114,7 +114,7 @@ func (c *Cpu) testAndSetOverflowAddition(a, b, d uint8) {
     }
 }
 
-func (c *Cpu) Add(val uint8) {
+func (c *Cpu) Adc(val uint8) {
     old := c.A
 
     c.A += old + (c.P & 0x01)
