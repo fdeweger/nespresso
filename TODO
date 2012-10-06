@@ -1,6 +1,10 @@
+*>  means implemented but not unit tested
 
---> ADC     ....    add with carry
-AND     ....    and (with accumulator)
+
+Remaining opcodes:
+
+*> ADC     ....    add with carry
+*> AND     ....    and (with accumulator)
 ASL     ....    arithmetic shift left
 BCC     ....    branch on carry clear
 BCS     ....    branch on carry set
@@ -12,20 +16,20 @@ BPL     ....    branch on plus (negative clear)
 BRK     ....    interrupt
 BVC     ....    branch on overflow clear
 BVS     ....    branch on overflow set
-CLC     ....    clear carry
+*> CLC     ....    clear carry
 CLD     ....    clear decimal
-CLI     ....    clear interrupt disable
-CLV     ....    clear overflow
+*> CLI     ....    clear interrupt disable
+*> CLV     ....    clear overflow
 CMP     ....    compare (with accumulator)
 CPX     ....    compare with X
 CPY     ....    compare with Y
 DEC     ....    decrement
-DEX     ....    decrement X
-DEY     ....    decrement Y
+*> DEX     ....    decrement X
+*> DEY     ....    decrement Y
 EOR     ....    exclusive or (with accumulator)
 INC     ....    increment
-INX     ....    increment X
-INY     ....    increment Y
+*> INX     ....    increment X
+*> INY     ....    increment Y
 JMP     ....    jump
 JSR     ....    jump subroutine
 LDA     ....    load accumulator
@@ -49,9 +53,9 @@ SEI     ....    set interrupt disable
 STA     ....    store accumulator
 STX     ....    store X
 STY     ....    store Y
-TAX     ....    transfer accumulator to X
-TAY     ....    transfer accumulator to Y
+*> TAX     ....    transfer accumulator to X
+*> TAY     ....    transfer accumulator to Y
 TSX     ....    transfer stack pointer to X
-TXA     ....    transfer X to accumulator
+*> TXA     ....    transfer X to accumulator
 TXS     ....    transfer X to stack pointer
-TYA     ....    transfer Y to accumulator
+*> TYA     ....    transfer Y to accumulator

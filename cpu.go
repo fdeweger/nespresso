@@ -124,6 +124,72 @@ func (c *Cpu) Add(val uint8) {
     c.testAndSetOverflowAddition(old, val, c.A)
 }
 
+func (c *Cpu) And(val uint8) {
+    c.A = c.A & val
+    c.testAndSetNegative(c.A)
+    c.testAndSetZero(c.A)
+}
+
+func (c *Cpu) Clc() {
+    c.clearCarry()
+}
+
+func (c *Cpu) Cli() {
+    c.clearInteruptDisable()
+}
+
+func (c *Cpu) Clv() {
+    c.clearOverflow()
+}
+
+func (c *Cpu) Dex() {
+    c.X--
+    c.testAndSetNegative(c.X)
+    c.testAndSetZero(c.X)
+}
+
+func (c *Cpu) Dey() {
+    c.Y--
+    c.testAndSetNegative(c.Y)
+    c.testAndSetZero(c.Y)
+}
+
+func (c *Cpu) Inx() {
+    c.X++
+    c.testAndSetNegative(c.X)
+    c.testAndSetZero(c.X)
+}
+
+func (c *Cpu) Iny() {
+    c.Y++
+    c.testAndSetNegative(c.Y)
+    c.testAndSetZero(c.Y)
+}
+
+func (c *Cpu) Tax() {
+    c.X = c.A
+    c.testAndSetNegative(c.A)
+    c.testAndSetZero(c.A)
+}
+
+func (c *Cpu) Tay() {
+    c.Y = c.A
+    c.testAndSetNegative(c.A)
+    c.testAndSetZero(c.A)
+}
+
+func (c *Cpu) Txa() {
+    c.A = c.X
+    c.testAndSetNegative(c.A)
+    c.testAndSetZero(c.A)
+}
+
+func (c *Cpu) Tya() {
+    c.A = c.Y
+    c.testAndSetNegative(c.A)
+    c.testAndSetZero(c.A)
+}
+
 func (c *Cpu) Dump() string {
-    return fmt.Sprintf("X: %#H\tY: %#H\nA: %#H\tP: %#H\n", c.X, c.Y, c.A, c.P)
+    return fmt.Sprintf("X: %#X\tY: %#X\nA: %#X\tP: %#X\n", c.X, c.Y, c.A, c.P)
 }
