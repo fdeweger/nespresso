@@ -105,6 +105,14 @@ func (c *Cpu) testAndSetCarryAddition(val int) {
     }
 }
 
+func (c *Cpu) testAndSetCarrySubtraction(val int) {
+    if val < 0 {
+        c.clearCarry()
+    } else {
+        c.setCarry()
+    }
+}
+
 //see http://teaching.idallen.com/dat2343/10f/notes/040_overflow.txt for an excellent explanation
 func (c *Cpu) testAndSetOverflowAddition(a, b, d uint8) {
     if ((a^b)&0x80 == 0x00) && ((a^d)&0x80 == 0x80) {
@@ -112,6 +120,14 @@ func (c *Cpu) testAndSetOverflowAddition(a, b, d uint8) {
     } else {
         c.clearOverflow()
     }
+}
+
+func (c *Cpu) testAndSetOverflowSubtraction(a, b, d uint8) {
+        if ((a^val)&0x80) != 0 && ((a^b)&0x80) != 0 {
+                c.setOverflow()
+        } else {
+                c.clearOverflow()
+        }
 }
 
 func (c *Cpu) Adc(val uint8) {
@@ -142,6 +158,27 @@ func (c *Cpu) Clv() {
     c.clearOverflow()
 }
 
+func (c *Cpu) Cmp(val uint8) {
+    res := c.A - val
+    c.testAndSetNegative(res)
+    c.testAndSetZero(res)
+    c.testAndSetCarrySubtraction(int(c.A) - int(val))
+}
+
+func (c *Cpu) Cpx(val uint8) {
+    res := c.X - val
+    c.testAndSetNegative(res)
+    c.testAndSetZero(res)
+    c.testAndSetCarrySubtraction(int(c.X) - int(val))
+}
+
+func (c *Cpu) Cpy(val uint8) {
+    res := c.Y - val
+    c.testAndSetNegative(res)
+    c.testAndSetZero(res)
+    c.testAndSetCarrySubtraction(int(c.Y) - int(val))
+}
+
 func (c *Cpu) Dex() {
     c.X--
     c.testAndSetNegative(c.X)
@@ -154,16 +191,69 @@ func (c *Cpu) Dey() {
     c.testAndSetZero(c.Y)
 }
 
+func (c *Cpu) Eor(val uint8) {
+    c.A = c.A ^ val
+    c.testAndSetNegative(c.A)
+    c.testAndSetZero(c.A)
+}
+
 func (c *Cpu) Inx() {
     c.X++
     c.testAndSetNegative(c.X)
     c.testAndSetZero(c.X)
 }
 
+func (c *Cpu) Lda(val uint8) {
+    c.A = val
+    c.testAndSetNegative(c.A)
+    c.testAndSetZero(c.A)
+}
+
+func (c *Cpu) Ldx(val uint8) {
+    c.X = val
+    c.testAndSetNegative(c.X)
+    c.testAndSetZero(c.X)
+}
+
+func (c *Cpu) Ldy(val uint8) {
+    c.Y = val
+    c.testAndSetNegative(c.Y)
+    c.testAndSetZero(c.Y)
+}
+
 func (c *Cpu) Iny() {
     c.Y++
     c.testAndSetNegative(c.Y)
     c.testAndSetZero(c.Y)
+}
+
+func (c *Cpu) Nop() {
+    return
+}
+
+func (c *Cpu) Ora(val uint8) {
+    c.A = c.A | val
+    c.testAndSetNegative(c.A)
+    c.testAndSetZero(c.A)
+}
+
+func (c *Cpu) Sbc(val uint8) {
+    old := c.A
+    c.A = old - val
+    c.A = c.A - (1 - c.P&0x01)
+
+    c.testAndSetNegative(c.A)
+    c.testAndSetZero(c.A)
+    //c.testAndSetOverflowSubtraction(old, val)
+    c.testAndSetCarrySubtraction(int(old) - int(val) - (1 - int(c.P&0x01)))
+}
+
+func (c *Cpu) Sec() {
+    c.setCarry()
+}
+
+func (c *Cpu) Sei() {
+    c.setInteruptDisable()
 }
 
 func (c *Cpu) Tax() {

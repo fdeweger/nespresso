@@ -1,5 +1,6 @@
 *>  means implemented but not unit tested
 
+ADC / SBC: Toevoegen cases waarbij de carry bit gezet is
 
 Remaining opcodes:
 
@@ -15,20 +16,12 @@ BRK     ....    interrupt
 BVC     ....    branch on overflow clear
 BVS     ....    branch on overflow set
 CLD     ....    clear decimal
-CMP     ....    compare (with accumulator)
-CPX     ....    compare with X
-CPY     ....    compare with Y
 DEC     ....    decrement
-EOR     ....    exclusive or (with accumulator)
 INC     ....    increment
 JMP     ....    jump
 JSR     ....    jump subroutine
-LDA     ....    load accumulator
-LDY     ....    load X
-LDY     ....    load Y
 LSR     ....    logical shift right
 NOP     ....    no operation
-ORA     ....    or with accumulator
 PHA     ....    push accumulator
 PHP     ....    push processor status (SR)
 PLA     ....    pull accumulator
@@ -38,13 +31,9 @@ ROR     ....    rotate right
 RTI     ....    return from interrupt
 RTS     ....    return from subroutine
 SBC     ....    subtract with carry
-SEC     ....    set carry
 SED     ....    set decimal
-SEI     ....    set interrupt disable
 STA     ....    store accumulator
 STX     ....    store X
 STY     ....    store Y
 TSX     ....    transfer stack pointer to X
-*> TXA     ....    transfer X to accumulator
 TXS     ....    transfer X to stack pointer
-*> TYA     ....    transfer Y to accumulator
