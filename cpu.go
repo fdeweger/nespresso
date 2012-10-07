@@ -202,9 +202,9 @@ func (c *Cpu) Cpy(val uint8) {
 }
 
 func (c *Cpu) Dec(loc uint16) {
-    val := c.Ram.Read(loc);
+    val := c.Ram.Read(loc)
     val--
-    
+
     c.testAndSetNegative(val)
     c.testAndSetZero(val)
     c.Ram.Write(loc, val)
@@ -229,9 +229,9 @@ func (c *Cpu) Eor(val uint8) {
 }
 
 func (c *Cpu) Inc(loc uint16) {
-    val := c.Ram.Read(loc);
+    val := c.Ram.Read(loc)
     val++
-    
+
     c.testAndSetNegative(val)
     c.testAndSetZero(val)
     c.Ram.Write(loc, val)
@@ -281,8 +281,6 @@ func (c *Cpu) LsrAcc() {
 func (c *Cpu) Lsr(loc uint16) {
     c.Ram.Write(loc, c.lsrBase(c.Ram.Read(loc)))
 }
-
-
 
 func (c *Cpu) Iny() {
     c.Y++
