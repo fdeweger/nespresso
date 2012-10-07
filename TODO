@@ -1,6 +1,7 @@
+Add unit tests for register flags after DEC / INC
+
 Remaining opcodes:
 
-ASL     ....    arithmetic shift left
 BCC     ....    branch on carry clear
 BCS     ....    branch on carry set
 BEQ     ....    branch on equal (zero set)
@@ -12,11 +13,8 @@ BRK     ....    interrupt
 BVC     ....    branch on overflow clear
 BVS     ....    branch on overflow set
 CLD     ....    clear decimal
-DEC     ....    decrement
-INC     ....    increment
 JMP     ....    jump
 JSR     ....    jump subroutine
-LSR     ....    logical shift right
 PHA     ....    push accumulator
 PHP     ....    push processor status (SR)
 PLA     ....    pull accumulator
@@ -25,10 +23,6 @@ ROL     ....    rotate left
 ROR     ....    rotate right
 RTI     ....    return from interrupt
 RTS     ....    return from subroutine
-SBC     ....    subtract with carry
 SED     ....    set decimal
-STA     ....    store accumulator
-STX     ....    store X
-STY     ....    store Y
 TSX     ....    transfer stack pointer to X
 TXS     ....    transfer X to stack pointer

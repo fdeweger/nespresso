@@ -396,6 +396,14 @@ func TestCpy(t *testing.T) {
     }
 }
 
+func TestDec(t *testing.T) {
+    cpu := new(Cpu)
+    test := memTest{0x00, 0x01, 0x00, cpu}
+    test.setup()
+    cpu.Dec(test.loc)
+    test.test(t)
+}
+
 func TestDex(t *testing.T) {
     cpu := new(Cpu)
     tests := []cpuTest{
@@ -436,6 +444,14 @@ func TestEor(t *testing.T) {
         cpu.Eor(test.val)
         test.test(t)
     }
+}
+
+func TestInc(t *testing.T) {
+    cpu := new(Cpu)
+    test := memTest{0x00, 0x01, 0x02, cpu}
+    test.setup()
+    cpu.Inc(test.loc)
+    test.test(t)
 }
 
 func TestInx(t *testing.T) {
@@ -508,6 +524,29 @@ func TestLdy(t *testing.T) {
     }
 }
 
+func TestLsr(t *testing.T) {
+    cpu := new(Cpu)
+    test := memTest{0x00, 0x02, 0x01, cpu}
+    test.setup()
+    cpu.Lsr(test.loc)
+    test.test(t)
+}
+
+func TestLsrAcc(t *testing.T) {
+    cpu := new(Cpu)
+    tests := []cpuTest{
+        {0x80, 0x00, 0x00, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00, cpu},
+        {0x11, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x01, 0x00, cpu},
+        {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, cpu},
+    }
+
+    for _, test := range tests {
+        test.setup()
+        cpu.LsrAcc()
+        test.test(t)
+    }
+}
+
 func TestNop(t *testing.T) {
     cpu := new(Cpu)
     tests := []cpuTest{
@@ -575,6 +614,33 @@ func TestSei(t *testing.T) {
         cpu.Sei()
         test.test(t)
     }
+}
+
+func TestSta(t *testing.T) {
+    cpu := new(Cpu)
+    cpu.A = 0x03
+    test := memTest{0x00, 0x00, 0x03, cpu}
+    test.setup()
+    cpu.Sta(test.loc)
+    test.test(t)
+}
+
+func TestStx(t *testing.T) {
+    cpu := new(Cpu)
+    cpu.X = 0x04
+    test := memTest{0x00, 0x00, 0x04, cpu}
+    test.setup()
+    cpu.Stx(test.loc)
+    test.test(t)
+}
+
+func TestSty(t *testing.T) {
+    cpu := new(Cpu)
+    cpu.Y = 0x08
+    test := memTest{0x00, 0x00, 0x08, cpu}
+    test.setup()
+    cpu.Sty(test.loc)
+    test.test(t)
 }
 
 func TestTax(t *testing.T) {

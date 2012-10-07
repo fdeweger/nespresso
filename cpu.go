@@ -160,8 +160,8 @@ func (c *Cpu) aslBase(val uint8) uint8 {
     return val
 }
 
-func (c *Cpu) Asl(location uint16) {
-    c.Ram.Write(location, c.aslBase(c.Ram.Read(location)))
+func (c *Cpu) Asl(loc uint16) {
+    c.Ram.Write(loc, c.aslBase(c.Ram.Read(loc)))
 }
 
 func (c *Cpu) AslAcc() {
@@ -201,6 +201,15 @@ func (c *Cpu) Cpy(val uint8) {
     c.testAndSetCarrySubtraction(int(c.Y) - int(val))
 }
 
+func (c *Cpu) Dec(loc uint16) {
+    val := c.Ram.Read(loc);
+    val--
+    
+    c.testAndSetNegative(val)
+    c.testAndSetZero(val)
+    c.Ram.Write(loc, val)
+}
+
 func (c *Cpu) Dex() {
     c.X--
     c.testAndSetNegative(c.X)
@@ -217,6 +226,15 @@ func (c *Cpu) Eor(val uint8) {
     c.A = c.A ^ val
     c.testAndSetNegative(c.A)
     c.testAndSetZero(c.A)
+}
+
+func (c *Cpu) Inc(loc uint16) {
+    val := c.Ram.Read(loc);
+    val++
+    
+    c.testAndSetNegative(val)
+    c.testAndSetZero(val)
+    c.Ram.Write(loc, val)
 }
 
 func (c *Cpu) Inx() {
@@ -242,6 +260,29 @@ func (c *Cpu) Ldy(val uint8) {
     c.testAndSetNegative(c.Y)
     c.testAndSetZero(c.Y)
 }
+
+func (c *Cpu) lsrBase(val uint8) uint8 {
+    if val&0x01 == 0x01 {
+        c.setCarry()
+    } else {
+        c.clearCarry()
+    }
+
+    val = val >> 1
+    c.testAndSetNegative(val)
+    c.testAndSetZero(val)
+    return val
+}
+
+func (c *Cpu) LsrAcc() {
+    c.A = c.lsrBase(c.A)
+}
+
+func (c *Cpu) Lsr(loc uint16) {
+    c.Ram.Write(loc, c.lsrBase(c.Ram.Read(loc)))
+}
+
+
 
 func (c *Cpu) Iny() {
     c.Y++
@@ -276,6 +317,18 @@ func (c *Cpu) Sec() {
 
 func (c *Cpu) Sei() {
     c.setInteruptDisable()
+}
+
+func (c *Cpu) Sta(loc uint16) {
+    c.Ram.Write(loc, c.A)
+}
+
+func (c *Cpu) Stx(loc uint16) {
+    c.Ram.Write(loc, c.X)
+}
+
+func (c *Cpu) Sty(loc uint16) {
+    c.Ram.Write(loc, c.Y)
 }
 
 func (c *Cpu) Tax() {
