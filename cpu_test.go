@@ -2,6 +2,9 @@ package main
 
 import "testing"
 
+/**
+ * Register tests
+ */
 func TestCarry(t *testing.T) {
     cpu := Cpu{}
 
@@ -139,7 +142,7 @@ func TestTestAndSetZero(t *testing.T) {
 func TestTestAndSetCarryAddition(t *testing.T) {
     cpu := Cpu{}
 
-    cpu.testAndSetCarryAddition(0x81)
+    cpu.testAndSetCarryAddition(0x100)
     if !cpu.getCarry() {
         t.Error("Expected getCarry to return true")
     }
@@ -167,5 +170,213 @@ func TestTestAndSetOverflowAddition(t *testing.T) {
         if val.expected != cpu.getOverflow() {
             t.Errorf("Expected %t for %#X, %#X and %#X, got %t", val.expected, val.a, val.b, val.c, cpu.getOverflow())
         }
+    }
+}
+
+/**
+ * Opcode tests
+ */
+type cpuTest struct {
+    a1, x1, y1, p1, a2, x2, y2, p2, val uint8
+    cpu                                 *Cpu
+}
+
+func (c *cpuTest) setup() {
+    c.cpu.A = c.a1
+    c.cpu.X = c.x1
+    c.cpu.Y = c.y1
+    c.cpu.P = c.p1
+}
+
+func (c *cpuTest) test(t *testing.T) {
+    if c.cpu.A != c.a2 || c.cpu.X != c.x2 || c.cpu.Y != c.y2 || c.cpu.P != c.p2 {
+        t.Errorf("cpuTest:\nA: %#X\tX: %#X\tY: %#X\tP: %#X \nA: %#X\tX: %#X\tY: %#X\tP: %#X", c.a2, c.x2, c.y2, c.p2, c.cpu.A, c.cpu.X, c.cpu.Y, c.cpu.P)
+    }
+}
+
+func TestAdc(t *testing.T) {
+    cpu := new(Cpu)
+    tests := []cpuTest{
+        {0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x04, cpu},
+        {0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x43, 0x80, cpu},
+        {0x80, 0x00, 0x00, 0x00, 0x81, 0x00, 0x00, 0x80, 0x01, cpu},
+    }
+
+    for _, test := range tests {
+        test.setup()
+        cpu.Adc(test.val)
+        test.test(t)
+    }
+}
+
+func TestAnd(t *testing.T) {
+    cpu := new(Cpu)
+    tests := []cpuTest{
+        {0x88, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x08, cpu},
+        {0x80, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x80, 0x80, cpu},
+        {0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x40, cpu},
+    }
+
+    for _, test := range tests {
+        test.setup()
+        cpu.And(test.val)
+        test.test(t)
+    }
+}
+
+func TestCnc(t *testing.T) {
+    cpu := new(Cpu)
+    tests := []cpuTest{
+        {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, cpu},
+        {0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, cpu},
+        {0x00, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00, 0xFE, 0x00, cpu},
+    }
+
+    for _, test := range tests {
+        test.setup()
+        cpu.Clc()
+        test.test(t)
+    }
+}
+
+func TestCli(t *testing.T) {
+    cpu := new(Cpu)
+    tests := []cpuTest{
+        {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, cpu},
+        {0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, cpu},
+        {0x00, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00, 0xFB, 0x00, cpu},
+    }
+
+    for _, test := range tests {
+        test.setup()
+        cpu.Cli()
+        test.test(t)
+    }
+}
+
+func TestClv(t *testing.T) {
+    cpu := new(Cpu)
+    tests := []cpuTest{
+        {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, cpu},
+        {0x00, 0x00, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, cpu},
+        {0x00, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00, 0xBF, 0x00, cpu},
+    }
+
+    for _, test := range tests {
+        test.setup()
+        cpu.Clv()
+        test.test(t)
+    }
+}
+
+func TestDex(t *testing.T) {
+    cpu := new(Cpu)
+    tests := []cpuTest{
+        {0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0x00, 0x80, 0x00, cpu},
+        {0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, cpu},
+    }
+
+    for _, test := range tests {
+        test.setup()
+        cpu.Dex()
+        test.test(t)
+    }
+}
+
+func TestDey(t *testing.T) {
+    cpu := new(Cpu)
+    tests := []cpuTest{
+        {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0x80, 0x00, cpu},
+        {0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, cpu},
+    }
+
+    for _, test := range tests {
+        test.setup()
+        cpu.Dey()
+        test.test(t)
+    }
+}
+
+func TestInx(t *testing.T) {
+    cpu := new(Cpu)
+    tests := []cpuTest{
+        {0x00, 0x7F, 0x00, 0x00, 0x00, 0x80, 0x00, 0x80, 0x00, cpu},
+        {0x00, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, cpu},
+    }
+
+    for _, test := range tests {
+        test.setup()
+        cpu.Inx()
+        test.test(t)
+    }
+}
+
+func TestIny(t *testing.T) {
+    cpu := new(Cpu)
+    tests := []cpuTest{
+        {0x00, 0x00, 0x7F, 0x00, 0x00, 0x00, 0x80, 0x80, 0x00, cpu},
+        {0x00, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, cpu},
+    }
+
+    for _, test := range tests {
+        test.setup()
+        cpu.Iny()
+        test.test(t)
+    }
+}
+
+func TestTax(t *testing.T) {
+    cpu := new(Cpu)
+    tests := []cpuTest{
+        {0xF0, 0x40, 0x00, 0x00, 0xF0, 0xF0, 0x00, 0x80, 0x00, cpu},
+        {0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, cpu},
+    }
+
+    for _, test := range tests {
+        test.setup()
+        cpu.Tax()
+        test.test(t)
+    }
+}
+
+func TestTay(t *testing.T) {
+    cpu := new(Cpu)
+    tests := []cpuTest{
+        {0xF0, 0x40, 0x20, 0x00, 0xF0, 0x40, 0xF0, 0x80, 0x00, cpu},
+        {0x00, 0x40, 0x20, 0x00, 0x00, 0x40, 0x00, 0x02, 0x00, cpu},
+    }
+
+    for _, test := range tests {
+        test.setup()
+        cpu.Tay()
+        test.test(t)
+    }
+}
+
+func TestTxa(t *testing.T) {
+    cpu := new(Cpu)
+    tests := []cpuTest{
+        {0x40, 0xF0, 0x00, 0x00, 0xF0, 0xF0, 0x00, 0x80, 0x00, cpu},
+        {0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, cpu},
+    }
+
+    for _, test := range tests {
+        test.setup()
+        cpu.Txa()
+        test.test(t)
+    }
+}
+
+func TestTya(t *testing.T) {
+    cpu := new(Cpu)
+    tests := []cpuTest{
+        {0x40, 0x00, 0xF0, 0x00, 0xF0, 0x00, 0xF0, 0x80, 0x00, cpu},
+        {0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, cpu},
+    }
+
+    for _, test := range tests {
+        test.setup()
+        cpu.Tya()
+        test.test(t)
     }
 }

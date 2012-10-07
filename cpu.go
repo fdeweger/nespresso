@@ -98,7 +98,7 @@ func (c *Cpu) testAndSetZero(val uint8) {
 }
 
 func (c *Cpu) testAndSetCarryAddition(val int) {
-    if val > 0x80 {
+    if val > 0xFF {
         c.setCarry()
     } else {
         c.clearCarry()
@@ -117,10 +117,10 @@ func (c *Cpu) testAndSetOverflowAddition(a, b, d uint8) {
 func (c *Cpu) Adc(val uint8) {
     old := c.A
 
-    c.A += old + (c.P & 0x01)
+    c.A += val + (c.P & 0x01)
     c.testAndSetNegative(c.A)
     c.testAndSetZero(c.A)
-    c.testAndSetCarryAddition(int(c.A) + int(old) + int(c.P&0x01))
+    c.testAndSetCarryAddition(int(val) + int(old) + int(c.P&0x01))
     c.testAndSetOverflowAddition(old, val, c.A)
 }
 
@@ -191,5 +191,5 @@ func (c *Cpu) Tya() {
 }
 
 func (c *Cpu) Dump() string {
-    return fmt.Sprintf("X: %#X\tY: %#X\nA: %#X\tP: %#X\n", c.X, c.Y, c.A, c.P)
+    return fmt.Sprintf("X: %#X\tY: %#X\nA: %#X\tP: %#X\n", c.A, c.X, c.Y, c.P)
 }
