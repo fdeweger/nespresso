@@ -7,6 +7,7 @@ type Cpu struct {
     X   uint8
     Y   uint8
     P   uint8
+    Ram Memory
 }
 
 func (c *Cpu) getCarry() bool {
@@ -123,11 +124,11 @@ func (c *Cpu) testAndSetOverflowAddition(a, b, d uint8) {
 }
 
 func (c *Cpu) testAndSetOverflowSubtraction(a, b, d uint8) {
-        if ((a^val)&0x80) != 0 && ((a^b)&0x80) != 0 {
-                c.setOverflow()
-        } else {
-                c.clearOverflow()
-        }
+    if ((a^b)&0x80 == 0x80) && ((a^d)&0x80 == 0x80) {
+        c.setOverflow()
+    } else {
+        c.clearOverflow()
+    }
 }
 
 func (c *Cpu) Adc(val uint8) {
@@ -144,6 +145,27 @@ func (c *Cpu) And(val uint8) {
     c.A = c.A & val
     c.testAndSetNegative(c.A)
     c.testAndSetZero(c.A)
+}
+
+func (c *Cpu) aslBase(val uint8) uint8 {
+    if val&0x80 == 0x80 {
+        c.setCarry()
+    } else {
+        c.clearCarry()
+    }
+
+    val = val << 1
+    c.testAndSetNegative(val)
+    c.testAndSetZero(val)
+    return val
+}
+
+func (c *Cpu) Asl(location uint16) {
+    c.Ram.Write(location, c.aslBase(c.Ram.Read(location)))
+}
+
+func (c *Cpu) AslAcc() {
+    c.A = c.aslBase(c.A)
 }
 
 func (c *Cpu) Clc() {
@@ -238,13 +260,13 @@ func (c *Cpu) Ora(val uint8) {
 }
 
 func (c *Cpu) Sbc(val uint8) {
-    old := c.A
+    old := c.A //0x10
     c.A = old - val
-    c.A = c.A - (1 - c.P&0x01)
+    c.A = c.A - (1 - c.P&0x01) //0xf0
 
     c.testAndSetNegative(c.A)
     c.testAndSetZero(c.A)
-    //c.testAndSetOverflowSubtraction(old, val)
+    c.testAndSetOverflowSubtraction(old, val, c.A)
     c.testAndSetCarrySubtraction(int(old) - int(val) - (1 - int(c.P&0x01)))
 }
 

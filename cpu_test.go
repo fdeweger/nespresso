@@ -188,6 +188,26 @@ func TestTestAndSetOverflowAddition(t *testing.T) {
     }
 }
 
+func TestTestAndSetOverflowSubtraction(t *testing.T) {
+    var overflowAdditionTests = []struct {
+        a, b, c  uint8
+        expected bool
+    }{
+        {0x80, 0x7f, 0x00, true},
+        {0x80, 0x80, 0x00, false},
+        {0x80, 0x80, 0x80, false},
+        {0x00, 0x00, 0x80, false},
+    }
+
+    cpu := new(Cpu)
+    for _, val := range overflowAdditionTests {
+        cpu.testAndSetOverflowSubtraction(val.a, val.b, val.c)
+        if val.expected != cpu.getOverflow() {
+            t.Errorf("Expected %t for %#X, %#X and %#X, got %t", val.expected, val.a, val.b, val.c, cpu.getOverflow())
+        }
+    }
+}
+
 /**
  * Opcode tests
  */
@@ -203,11 +223,29 @@ func (c *cpuTest) setup() {
     c.cpu.X = c.x1
     c.cpu.Y = c.y1
     c.cpu.P = c.p1
+    c.cpu.Ram = new(SimpleMemory)
 }
 
 func (c *cpuTest) test(t *testing.T) {
     if c.cpu.A != c.a2 || c.cpu.X != c.x2 || c.cpu.Y != c.y2 || c.cpu.P != c.p2 {
         t.Errorf("cpuTest:\nA: %#X\tX: %#X\tY: %#X\tP: %#X \nA: %#X\tX: %#X\tY: %#X\tP: %#X", c.a2, c.x2, c.y2, c.p2, c.cpu.A, c.cpu.X, c.cpu.Y, c.cpu.P)
+    }
+}
+
+type memTest struct {
+    loc           uint16
+    before, after uint8
+    cpu           *Cpu
+}
+
+func (m *memTest) setup() {
+    m.cpu.Ram = new(SimpleMemory)
+    m.cpu.Ram.Write(m.loc, m.before)
+}
+
+func (m *memTest) test(t *testing.T) {
+    if m.cpu.Ram.Read(m.loc) != m.after {
+        t.Errorf("memTest: expected %#X, got %#X", m.after, m.cpu.Ram.Read(m.loc))
     }
 }
 
@@ -217,6 +255,7 @@ func TestAdc(t *testing.T) {
         {0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x04, cpu},
         {0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x43, 0x80, cpu},
         {0x80, 0x00, 0x00, 0x00, 0x81, 0x00, 0x00, 0x80, 0x01, cpu},
+        {0x80, 0x00, 0x00, 0x01, 0x82, 0x00, 0x00, 0x80, 0x01, cpu},
     }
 
     for _, test := range tests {
@@ -237,6 +276,29 @@ func TestAnd(t *testing.T) {
     for _, test := range tests {
         test.setup()
         cpu.And(test.val)
+        test.test(t)
+    }
+}
+
+func TestAsl(t *testing.T) {
+    cpu := new(Cpu)
+    test := memTest{0x00, 0x01, 0x02, cpu}
+    test.setup()
+    cpu.Asl(test.loc)
+    test.test(t)
+}
+
+func TestAslAcc(t *testing.T) {
+    cpu := new(Cpu)
+    tests := []cpuTest{
+        {0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, cpu},
+        {0x20, 0x00, 0x00, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00, cpu},
+        {0x40, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x80, 0x00, cpu},
+    }
+
+    for _, test := range tests {
+        test.setup()
+        cpu.AslAcc()
         test.test(t)
     }
 }

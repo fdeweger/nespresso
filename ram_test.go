@@ -3,7 +3,7 @@ package main
 import "testing"
 
 func TestRam(t *testing.T) {
-    r := new(Memory)
+    r := new(SimpleMemory)
     if r.Read(0) != 0 {
         t.Fail()
     }

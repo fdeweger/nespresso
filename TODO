@@ -1,7 +1,3 @@
-*>  means implemented but not unit tested
-
-ADC / SBC: Toevoegen cases waarbij de carry bit gezet is
-
 Remaining opcodes:
 
 ASL     ....    arithmetic shift left
@@ -21,7 +17,6 @@ INC     ....    increment
 JMP     ....    jump
 JSR     ....    jump subroutine
 LSR     ....    logical shift right
-NOP     ....    no operation
 PHA     ....    push accumulator
 PHP     ....    push processor status (SR)
 PLA     ....    pull accumulator
