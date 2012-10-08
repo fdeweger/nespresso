@@ -300,23 +300,23 @@ func (c *Cpu) Ora(val uint8) {
 
 func (c *Cpu) rolBase(val uint8) uint8 {
     carry := val & 0x80
-    
+
     val = val << 1
-    
+
     if c.getCarry() {
         val += 1
     }
-    
+
     if carry == 0x80 {
         c.setCarry()
-    } else  {
-        c.clearCarry();
+    } else {
+        c.clearCarry()
     }
-    
+
     c.testAndSetNegative(val)
     c.testAndSetZero(val)
-    
-    return val 
+
+    return val
 }
 
 func (c *Cpu) RolAcc() {
@@ -329,23 +329,23 @@ func (c *Cpu) Rol(loc uint16) {
 
 func (c *Cpu) rorBase(val uint8) uint8 {
     carry := val & 0x01
-    
+
     val = val >> 1
-    
+
     if c.getCarry() {
         val = val | 0x80
     }
-    
+
     if carry == 0x01 {
         c.setCarry()
-    } else  {
-        c.clearCarry();
+    } else {
+        c.clearCarry()
     }
-    
+
     c.testAndSetNegative(val)
     c.testAndSetZero(val)
-    
-    return val 
+
+    return val
 }
 
 func (c *Cpu) RorAcc() {
