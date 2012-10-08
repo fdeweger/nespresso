@@ -298,6 +298,64 @@ func (c *Cpu) Ora(val uint8) {
     c.testAndSetZero(c.A)
 }
 
+func (c *Cpu) rolBase(val uint8) uint8 {
+    carry := val & 0x80
+    
+    val = val << 1
+    
+    if c.getCarry() {
+        val += 1
+    }
+    
+    if carry == 0x80 {
+        c.setCarry()
+    } else  {
+        c.clearCarry();
+    }
+    
+    c.testAndSetNegative(val)
+    c.testAndSetZero(val)
+    
+    return val 
+}
+
+func (c *Cpu) RolAcc() {
+    c.A = c.rolBase(c.A)
+}
+
+func (c *Cpu) Rol(loc uint16) {
+    c.Ram.Write(loc, c.rolBase(c.Ram.Read(loc)))
+}
+
+func (c *Cpu) rorBase(val uint8) uint8 {
+    carry := val & 0x01
+    
+    val = val >> 1
+    
+    if c.getCarry() {
+        val = val | 0x80
+    }
+    
+    if carry == 0x01 {
+        c.setCarry()
+    } else  {
+        c.clearCarry();
+    }
+    
+    c.testAndSetNegative(val)
+    c.testAndSetZero(val)
+    
+    return val 
+}
+
+func (c *Cpu) RorAcc() {
+    c.A = c.rorBase(c.A)
+}
+
+func (c *Cpu) Ror(loc uint16) {
+    c.Ram.Write(loc, c.rorBase(c.Ram.Read(loc)))
+}
+
 func (c *Cpu) Sbc(val uint8) {
     old := c.A //0x10
     c.A = old - val
