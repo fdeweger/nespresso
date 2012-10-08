@@ -235,6 +235,7 @@ func (c *cpuTest) test(t *testing.T) {
 type memTest struct {
     loc           uint16
     before, after uint8
+    p             uint8
     cpu           *Cpu
 }
 
@@ -246,6 +247,10 @@ func (m *memTest) setup() {
 func (m *memTest) test(t *testing.T) {
     if m.cpu.Ram.Read(m.loc) != m.after {
         t.Errorf("memTest: expected %#X, got %#X", m.after, m.cpu.Ram.Read(m.loc))
+    }
+
+    if m.cpu.P != m.p {
+        t.Errorf("memTest: expected register state %#X, got %#X", m.p, m.cpu.P)
     }
 }
 
@@ -282,10 +287,17 @@ func TestAnd(t *testing.T) {
 
 func TestAsl(t *testing.T) {
     cpu := new(Cpu)
-    test := memTest{0x00, 0x01, 0x02, cpu}
-    test.setup()
-    cpu.Asl(test.loc)
-    test.test(t)
+    tests := []memTest{
+        {0x00, 0x01, 0x02, 0x00, cpu},
+        {0x00, 0x40, 0x80, 0x80, cpu},
+        {0x00, 0x80, 0x00, 0x03, cpu},
+    }
+
+    for _, test := range tests {
+        test.setup()
+        cpu.Asl(test.loc)
+        test.test(t)
+    }
 }
 
 func TestAslAcc(t *testing.T) {
@@ -398,10 +410,18 @@ func TestCpy(t *testing.T) {
 
 func TestDec(t *testing.T) {
     cpu := new(Cpu)
-    test := memTest{0x00, 0x01, 0x00, cpu}
-    test.setup()
-    cpu.Dec(test.loc)
-    test.test(t)
+
+    tests := []memTest{
+        {0x00, 0x02, 0x01, 0x00, cpu},
+        {0x00, 0x81, 0x80, 0x80, cpu},
+        {0x00, 0x01, 0x00, 0x02, cpu},
+    }
+
+    for _, test := range tests {
+        test.setup()
+        cpu.Dec(test.loc)
+        test.test(t)
+    }
 }
 
 func TestDex(t *testing.T) {
@@ -448,10 +468,17 @@ func TestEor(t *testing.T) {
 
 func TestInc(t *testing.T) {
     cpu := new(Cpu)
-    test := memTest{0x00, 0x01, 0x02, cpu}
-    test.setup()
-    cpu.Inc(test.loc)
-    test.test(t)
+    tests := []memTest{
+        {0x00, 0x01, 0x02, 0x00, cpu},
+        {0x00, 0x7f, 0x80, 0x80, cpu},
+        {0x00, 0xff, 0x00, 0x02, cpu},
+    }
+
+    for _, test := range tests {
+        test.setup()
+        cpu.Inc(test.loc)
+        test.test(t)
+    }
 }
 
 func TestInx(t *testing.T) {
@@ -525,8 +552,9 @@ func TestLdy(t *testing.T) {
 }
 
 func TestLsr(t *testing.T) {
+    //no need to test register states here, TestLsrAcc already does that implicitly
     cpu := new(Cpu)
-    test := memTest{0x00, 0x02, 0x01, cpu}
+    test := memTest{0x00, 0x02, 0x01, 0x00, cpu}
     test.setup()
     cpu.Lsr(test.loc)
     test.test(t)
@@ -619,7 +647,7 @@ func TestSei(t *testing.T) {
 func TestSta(t *testing.T) {
     cpu := new(Cpu)
     cpu.A = 0x03
-    test := memTest{0x00, 0x00, 0x03, cpu}
+    test := memTest{0x00, 0x00, 0x03, 0x00, cpu}
     test.setup()
     cpu.Sta(test.loc)
     test.test(t)
@@ -628,7 +656,7 @@ func TestSta(t *testing.T) {
 func TestStx(t *testing.T) {
     cpu := new(Cpu)
     cpu.X = 0x04
-    test := memTest{0x00, 0x00, 0x04, cpu}
+    test := memTest{0x00, 0x00, 0x04, 0x00, cpu}
     test.setup()
     cpu.Stx(test.loc)
     test.test(t)
@@ -637,7 +665,7 @@ func TestStx(t *testing.T) {
 func TestSty(t *testing.T) {
     cpu := new(Cpu)
     cpu.Y = 0x08
-    test := memTest{0x00, 0x00, 0x08, cpu}
+    test := memTest{0x00, 0x00, 0x08, 0x00, cpu}
     test.setup()
     cpu.Sty(test.loc)
     test.test(t)
